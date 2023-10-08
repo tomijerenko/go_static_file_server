@@ -30,7 +30,6 @@ RUN addgroup -g $GROUP_ID $GROUP_NAME && \
 RUN apk update && apk upgrade --no-cache
 WORKDIR /app
 RUN mkdir www
-RUN echo "hello" > www/hello
 COPY --from=build /app/server .
 EXPOSE 8080
 USER $USER_NAME:$GROUP_NAME
