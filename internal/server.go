@@ -45,11 +45,13 @@ func logger(next http.Handler) http.Handler {
 		recorder := &responseRecorder{ResponseWriter: w}
 		next.ServeHTTP(recorder, r)
 		duration := time.Since(startTime)
-		log.Printf("[%s] %s %s %s %d %s",
+		fmt.Printf("%d %s %s %s %s %s %d %s\n",
+			startTime.Unix(),
 			r.RemoteAddr,
 			r.Method,
 			r.RequestURI,
 			r.Proto,
+			r.Header["User-Agent"],
 			recorder.status,
 			duration,
 		)
