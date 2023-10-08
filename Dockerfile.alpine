@@ -15,16 +15,23 @@ RUN go mod download
 RUN go mod verify
 COPY  . .
 RUN make build-release
-RUN mkdir www
 
 ###################################################
-##                   SCRATCH                     ##
+##                    SETUP                      ##
 ###################################################
-FROM scratch
+FROM alpine:${ALPINE_VERSION}
+ENV USER_ID=65535
+ENV GROUP_ID=65535
+ENV USER_NAME=container
+ENV GROUP_NAME=container
+RUN addgroup -g $GROUP_ID $GROUP_NAME && \
+    adduser --shell /sbin/nologin --disabled-password \
+    --no-create-home --uid $USER_ID --ingroup $GROUP_NAME $USER_NAME
+RUN apk update && apk upgrade --no-cache
 WORKDIR /app
+RUN mkdir www
 COPY --from=build /app/server .
-COPY --from=build /app/www .
-USER 1000
+USER $USER_NAME:$GROUP_NAME
 EXPOSE 8080
 ENTRYPOINT ["./server"]
 CMD ["0.0.0.0", "8080", "www"]
